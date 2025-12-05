@@ -18,7 +18,31 @@ from langchain_openai import ChatOpenAI
 load_dotenv()  # loads OPENAI_API_KEY from .env if present
 
 # Support Streamlit secrets too
-OPENAI_KEY = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
+#OPENAI_KEY = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
+OPENAI_KEY= os.getenv("OPENAI_API_KEY","")
+
+#### Ui API Key entry can be added if needed
+# Sidebar: API key + model config
+with st.sidebar:
+    st.title("⚙️ Settings")
+    api_key = st.text_input(
+        "OpenAI API Key",
+        value=OPENAI_KEY,
+        type="password",
+        help="Pulled from .env if present. Overrides accepted."
+    )
+    model = st.selectbox("Model", ["gpt-4o", "gpt-4o-mini"])
+    temperature = st.slider("Temperature", 0.0, 1.0, 0.2, 0.05)
+    save_files = st.checkbox("Save outputs to server folder", value=False)
+    save_dir = st.text_input("Save directory", value="outputs")
+    st.caption("Outputs are also available as downloads from the UI.")
+
+# Guard: API key
+if not api_key:
+    st.warning("Please provide an OpenAI API key in the sidebar.")
+    st.stop()
+
+##End of UI API Key entry can be added if needed
 
 st.set_page_config(page_title="ATS Resume Expert")
 st.header("ATS Tracking System")
